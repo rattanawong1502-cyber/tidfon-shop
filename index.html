@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TidFon - ร้านกำไลเชือกถัก</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeLoginModal()">&times;</span>
+                <h2>เข้าสู่ระบบ</h2>
+                <form id="loginForm">
+                    <input type="text" id="loginUsername" placeholder="ชื่อผู้ใช้" required>
+                    <input type="password" id="loginPassword" placeholder="รหัสผ่าน" required>
+                    <button type="submit">เข้าสู่ระบบ</button>
+                </form>
+                <p>ยังไม่มีบัญชี? <a href="#" onclick="openRegisterModal()">สมัครสมาชิก</a></p>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeRegisterModal()">&times;</span>
+                <h2>สมัครสมาชิก</h2>
+                <form id="registerForm">
+                    <input type="text" id="regUsername" placeholder="ชื่อผู้ใช้" required>
+                    <input type="password" id="regPassword" placeholder="รหัสผ่าน" required>
+                    <input type="text" id="regName" placeholder="ชื่อ-นามสกุล" required>
+                    <input type="text" id="regPhone" placeholder="เบอร์โทรศัพท์" required>
+                    <textarea id="regAddress" placeholder="ที่อยู่" required></textarea>
+                    <button type="submit">สมัครสมาชิก</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <h1>🧵 TidFon</h1>
+                    <p class="tagline">กำไลเชือกถักสุดชิค</p>
+                </div>
+                <nav id="mainNav">
+                    <a href="#" onclick="showHome()">หน้าหลัก</a>
+                    <a href="#" onclick="showProducts()">สินค้า</a>
+                    <a href="#" onclick="showCart()" class="cart-link">
+                        🛒 ตะกร้า <span id="cartCount" class="badge">0</span>
+                    </a>
+                    <a href="#" onclick="showOrders()">คำสั่งซื้อ</a>
+                    <a href="#" id="authButton" onclick="openLoginModal()">เข้าสู่ระบบ</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="hero">
+                    <h2>ยินดีต้อนรับสู่ TidFon</h2>
+                    <p>กำไลเชือกถักแฮนด์เมด คุณภาพดี ราคาเป็นกันเอง</p>
+                    <button class="btn-primary" onclick="showProducts()">ช็อปเลย!</button>
+                </div>
+                
+                <div class="featured-products">
+                    <h3>สินค้าแนะนำ</h3>
+                    <div id="featuredProductsGrid" class="products-grid"></div>
+                </div>
+            </div>
+
+            <!-- Products Page -->
+            <div id="productsPage" class="page">
+                <h2>สินค้าทั้งหมด</h2>
+                <div id="productsGrid" class="products-grid"></div>
+            </div>
+
+            <!-- Cart Page -->
+            <div id="cartPage" class="page">
+                <h2>ตะกร้าสินค้า</h2>
+                <div id="cartItems"></div>
+                <div id="cartSummary" class="cart-summary"></div>
+            </div>
+
+            <!-- Checkout Page -->
+            <div id="checkoutPage" class="page">
+                <h2>ชำระเงิน</h2>
+                <div class="checkout-container">
+                    <div class="checkout-form">
+                        <h3>ข้อมูลการจัดส่ง</h3>
+                        <div id="shippingInfo"></div>
+                        
+                        <h3>วิธีการชำระเงิน</h3>
+                        <div class="payment-methods">
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="cod" checked>
+                                <span>💵 เก็บเงินปลายทาง</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="qr">
+                                <span>📱 QR พร้อมเพย์</span>
+                            </label>
+                        </div>
+
+                        <div id="qrPayment" class="qr-payment" style="display:none;">
+                            <img src="https://via.placeholder.com/300x300?text=QR+PromptPay" alt="QR Code">
+                            <p>สแกน QR Code เพื่อชำระเงิน</p>
+                        </div>
+
+                        <div class="coupon-section">
+                            <h3>ใช้คูปอง</h3>
+                            <input type="text" id="couponCode" placeholder="กรอกรหัสคูปอง">
+                            <button onclick="applyCoupon()">ใช้คูปอง</button>
+                        </div>
+
+                        <div class="points-section">
+                            <h3>แต้มสะสม</h3>
+                            <p>คุณมีแต้มสะสม: <span id="userPoints">0</span> แต้ม</p>
+                            <label>
+                                <input type="checkbox" id="usePoints">
+                                ใช้แต้มแลกส่วนลด (100 แต้ม = ส่วนลด 10 บาท)
+                            </label>
+                        </div>
+
+                        <button class="btn-primary" onclick="confirmOrder()">ยืนยันคำสั่งซื้อ</button>
+                    </div>
+                    <div class="order-summary" id="checkoutSummary"></div>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div id="ordersPage" class="page">
+                <h2>คำสั่งซื้อของฉัน</h2>
+                <div id="ordersList"></div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="adminPage" class="page">
+                <h2>🔧 ระบบจัดการสินค้า (Admin)</h2>
+                
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="showAdminTab('products')">จัดการสินค้า</button>
+                    <button class="tab-btn" onclick="showAdminTab('orders')">จัดการคำสั่งซื้อ</button>
+                    <button class="tab-btn" onclick="showAdminTab('members')">สมาชิก</button>
+                </div>
+
+                <div id="adminProducts" class="admin-tab active">
+                    <button class="btn-primary" onclick="showAddProductForm()">+ เพิ่มสินค้าใหม่</button>
+                    
+                    <div id="addProductForm" class="product-form" style="display:none;">
+                        <h3>เพิ่มสินค้าใหม่</h3>
+                        <form id="newProductForm">
+                            <input type="text" id="productName" placeholder="ชื่อสินค้า" required>
+                            <input type="url" id="productImage" placeholder="URL รูปภาพ" required>
+                            <input type="number" id="productPrice" placeholder="ราคา" required>
+                            <input type="number" id="productDiscount" placeholder="ราคาส่วนลด (ถ้ามี)">
+                            <input type="number" id="productStock" placeholder="จำนวนคงเหลือ" required>
+                            <textarea id="productDesc" placeholder="รายละเอียด"></textarea>
+                            <button type="submit">บันทึกสินค้า</button>
+                            <button type="button" onclick="hideAddProductForm()">ยกเลิก</button>
+                        </form>
+                    </div>
+
+                    <div id="adminProductsList"></div>
+                </div>
+
+                <div id="adminOrders" class="admin-tab">
+                    <div id="adminOrdersList"></div>
+                </div>
+
+                <div id="adminMembers" class="admin-tab">
+                    <div id="adminMembersList"></div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page">
+                <h2>โปรไฟล์</h2>
+                <div id="profileInfo"></div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>&copy; 2024 TidFon - ร้านกำไลเชือกถัก</p>
+                <p>ติดต่อเรา: tidfon@example.com | โทร: 02-xxx-xxxx</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="orders.js"></script>
+    <script src="admin.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
